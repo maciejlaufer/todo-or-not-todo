@@ -36,6 +36,9 @@ jobs:
 
       - name: Run migrations
         run: make migrateup
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: secret
 
       - name: Test
         run: make test
