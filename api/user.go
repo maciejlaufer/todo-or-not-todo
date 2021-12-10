@@ -1,9 +1,11 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	db "github.com/maciejlaufer/todoornottodo/db/sqlc"
 	"gopkg.in/guregu/null.v4"
 )
@@ -15,10 +17,26 @@ type createUserRequest struct {
 	LastName  string `json:"last_name"`
 }
 
-type createUserResponse struct {
+type userResponse struct {
 	Email     string      `json:"email" binding:"required"`
 	FirstName null.String `json:"first_name"`
 	LastName  null.String `json:"last_name"`
+}
+
+func formatUserResponse(user db.User) userResponse {
+	firstName := null.String{}
+	firstName.String = user.FirstName.String
+	firstName.Valid = user.FirstName.Valid
+
+	lastName := null.String{}
+	lastName.String = user.LastName.String
+	lastName.Valid = user.LastName.Valid
+
+	return userResponse{
+		Email:     user.Email,
+		FirstName: firstName,
+		LastName:  lastName,
+	}
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -41,19 +59,32 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	firstName := null.String{}
-	firstName.String = user.FirstName.String
-	firstName.Valid = user.FirstName.Valid
+	response := formatUserResponse(user)
+	ctx.JSON(http.StatusOK, response)
+}
 
-	lastName := null.String{}
-	lastName.String = user.LastName.String
-	lastName.Valid = user.LastName.Valid
+type getUserRequest struct {
+	ID string `uri:"id" binding:"required,uuid"`
+}
 
-	response := createUserResponse{
-		Email:     user.Email,
-		FirstName: firstName,
-		LastName:  lastName,
+func (server *Server) getUser(ctx *gin.Context) {
+	var req getUserRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
+	user, err := server.store.GetUserById(ctx, uuid.Must(uuid.Parse(req.ID)))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	response := formatUserResponse(user)
 	ctx.JSON(http.StatusOK, response)
 }
