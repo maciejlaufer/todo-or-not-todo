@@ -112,7 +112,7 @@ func (server *Server) getUsers(ctx *gin.Context) {
 		return
 	}
 
-	var response []userResponse
+	response := []userResponse{}
 
 	for _, user := range users {
 		response = append(response, formatUserResponse(user))
