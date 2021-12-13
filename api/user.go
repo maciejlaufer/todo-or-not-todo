@@ -88,3 +88,34 @@ func (server *Server) getUser(ctx *gin.Context) {
 	response := formatUserResponse(user)
 	ctx.JSON(http.StatusOK, response)
 }
+
+type getUsersRequest struct {
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=1,max=20"`
+}
+
+func (server *Server) getUsers(ctx *gin.Context) {
+	var req getUsersRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.GetUsersParams{
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
+	}
+
+	users, err := server.store.GetUsers(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	var response []userResponse
+
+	for _, user := range users {
+		response = append(response, formatUserResponse(user))
+	}
+	ctx.JSON(http.StatusOK, response)
+}
