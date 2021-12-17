@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -43,4 +44,15 @@ func TestGetList(t *testing.T) {
 	require.Equal(t, list1.ID, list2.ID)
 	require.Equal(t, list1.Name, list2.Name)
 	require.WithinDuration(t, list1.CreatedAt, list2.CreatedAt, time.Second)
+}
+
+func TestDeleteList(t *testing.T) {
+	list1 := createRandomList(t)
+	err := testQueries.DeleteList(context.Background(), list1.ID)
+	require.NoError(t, err)
+
+	list2, err := testQueries.GetList(context.Background(), list1.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, list2)
 }

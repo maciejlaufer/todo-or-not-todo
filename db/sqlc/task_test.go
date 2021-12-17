@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -45,4 +46,15 @@ func TestGetTask(t *testing.T) {
 	require.Equal(t, task1.ID, task2.ID)
 	require.Equal(t, task1.Name, task2.Name)
 	require.WithinDuration(t, task1.CreatedAt, task2.CreatedAt, time.Second)
+}
+
+func TestDeleteTask(t *testing.T) {
+	task1 := createRandomTask(t)
+	err := testQueries.DeleteTask(context.Background(), task1.ID)
+	require.NoError(t, err)
+
+	task2, err := testQueries.GetTask(context.Background(), task1.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, task2)
 }
