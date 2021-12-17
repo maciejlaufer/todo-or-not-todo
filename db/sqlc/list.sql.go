@@ -61,13 +61,14 @@ func (q *Queries) GetList(ctx context.Context, id uuid.UUID) (List, error) {
 	return i, err
 }
 
-const getLists = `-- name: GetLists :many
+const getListsByUserId = `-- name: GetListsByUserId :many
 SELECT id, name, user_id, created_at FROM lists
+WHERE user_id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) GetLists(ctx context.Context) ([]List, error) {
-	rows, err := q.query(ctx, q.getListsStmt, getLists)
+func (q *Queries) GetListsByUserId(ctx context.Context, userID uuid.UUID) ([]List, error) {
+	rows, err := q.query(ctx, q.getListsByUserIdStmt, getListsByUserId, userID)
 	if err != nil {
 		return nil, err
 	}

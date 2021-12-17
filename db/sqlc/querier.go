@@ -16,7 +16,7 @@ type Querier interface {
 	DeleteTask(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetList(ctx context.Context, id uuid.UUID) (List, error)
-	GetLists(ctx context.Context) ([]List, error)
+	GetListsByUserId(ctx context.Context, userID uuid.UUID) ([]List, error)
 	GetTask(ctx context.Context, id uuid.UUID) (Task, error)
 	GetTasksByListId(ctx context.Context, listID uuid.UUID) ([]Task, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)

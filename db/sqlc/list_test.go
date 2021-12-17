@@ -56,3 +56,32 @@ func TestDeleteList(t *testing.T) {
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, list2)
 }
+
+func TestUpdateList(t *testing.T) {
+	list1 := createRandomList(t)
+
+	arg := UpdateListParams{
+		ID:   list1.ID,
+		Name: util.RandomString(6),
+	}
+
+	list2, err := testQueries.UpdateList(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, list2)
+
+	require.Equal(t, list1.ID, list2.ID)
+	require.Equal(t, arg.Name, list2.Name)
+	require.WithinDuration(t, list1.CreatedAt, list2.CreatedAt, time.Second)
+}
+
+func TestGetLists(t *testing.T) {
+	list := createRandomList(t)
+
+	lists, err := testQueries.GetListsByUserId(context.Background(), list.UserID)
+	require.NoError(t, err)
+	require.Len(t, lists, 1)
+
+	for _, list := range lists {
+		require.NotEmpty(t, list)
+	}
+}

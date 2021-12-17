@@ -58,3 +58,34 @@ func TestDeleteTask(t *testing.T) {
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, task2)
 }
+
+func TestUpdateTask(t *testing.T) {
+	task1 := createRandomTask(t)
+
+	arg := UpdateTaskParams{
+		ID:          task1.ID,
+		Name:        util.RandomString(6),
+		Description: NewNullString(util.RandomString(16)),
+	}
+
+	task2, err := testQueries.UpdateTask(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, task2)
+
+	require.Equal(t, task1.ID, task2.ID)
+	require.Equal(t, arg.Name, task2.Name)
+	require.Equal(t, arg.Description.String, task2.Description.String)
+	require.WithinDuration(t, task1.CreatedAt, task2.CreatedAt, time.Second)
+}
+
+func TestGetTasks(t *testing.T) {
+	task := createRandomTask(t)
+
+	tasks, err := testQueries.GetTasksByListId(context.Background(), task.ListID)
+	require.NoError(t, err)
+	require.Len(t, tasks, 1)
+
+	for _, task := range tasks {
+		require.NotEmpty(t, task)
+	}
+}

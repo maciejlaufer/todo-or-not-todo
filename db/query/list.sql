@@ -10,8 +10,9 @@ INSERT INTO lists (
 SELECT * FROM lists
 WHERE id = $1 LIMIT 1;
 
--- name: GetLists :many
+-- name: GetListsByUserId :many
 SELECT * FROM lists
+WHERE user_id = $1
 ORDER BY created_at;
 
 -- name: UpdateList :one

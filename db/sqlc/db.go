@@ -43,8 +43,8 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getListStmt, err = db.PrepareContext(ctx, getList); err != nil {
 		return nil, fmt.Errorf("error preparing query GetList: %w", err)
 	}
-	if q.getListsStmt, err = db.PrepareContext(ctx, getLists); err != nil {
-		return nil, fmt.Errorf("error preparing query GetLists: %w", err)
+	if q.getListsByUserIdStmt, err = db.PrepareContext(ctx, getListsByUserId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetListsByUserId: %w", err)
 	}
 	if q.getTaskStmt, err = db.PrepareContext(ctx, getTask); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTask: %w", err)
@@ -110,9 +110,9 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getListStmt: %w", cerr)
 		}
 	}
-	if q.getListsStmt != nil {
-		if cerr := q.getListsStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getListsStmt: %w", cerr)
+	if q.getListsByUserIdStmt != nil {
+		if cerr := q.getListsByUserIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getListsByUserIdStmt: %w", cerr)
 		}
 	}
 	if q.getTaskStmt != nil {
@@ -201,7 +201,7 @@ type Queries struct {
 	deleteTaskStmt       *sql.Stmt
 	deleteUserStmt       *sql.Stmt
 	getListStmt          *sql.Stmt
-	getListsStmt         *sql.Stmt
+	getListsByUserIdStmt *sql.Stmt
 	getTaskStmt          *sql.Stmt
 	getTasksByListIdStmt *sql.Stmt
 	getUserByEmailStmt   *sql.Stmt
@@ -223,7 +223,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		deleteTaskStmt:       q.deleteTaskStmt,
 		deleteUserStmt:       q.deleteUserStmt,
 		getListStmt:          q.getListStmt,
-		getListsStmt:         q.getListsStmt,
+		getListsByUserIdStmt: q.getListsByUserIdStmt,
 		getTaskStmt:          q.getTaskStmt,
 		getTasksByListIdStmt: q.getTasksByListIdStmt,
 		getUserByEmailStmt:   q.getUserByEmailStmt,

@@ -36,6 +36,36 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// CreateList mocks base method.
+func (m *MockStore) CreateList(arg0 context.Context, arg1 db.CreateListParams) (db.List, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateList", arg0, arg1)
+	ret0, _ := ret[0].(db.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateList indicates an expected call of CreateList.
+func (mr *MockStoreMockRecorder) CreateList(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateList", reflect.TypeOf((*MockStore)(nil).CreateList), arg0, arg1)
+}
+
+// CreateTask mocks base method.
+func (m *MockStore) CreateTask(arg0 context.Context, arg1 db.CreateTaskParams) (db.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTask", arg0, arg1)
+	ret0, _ := ret[0].(db.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTask indicates an expected call of CreateTask.
+func (mr *MockStoreMockRecorder) CreateTask(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockStore)(nil).CreateTask), arg0, arg1)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(arg0 context.Context, arg1 db.CreateUserParams) (db.User, error) {
 	m.ctrl.T.Helper()
@@ -51,6 +81,34 @@ func (mr *MockStoreMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockStore)(nil).CreateUser), arg0, arg1)
 }
 
+// DeleteList mocks base method.
+func (m *MockStore) DeleteList(arg0 context.Context, arg1 uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteList", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteList indicates an expected call of DeleteList.
+func (mr *MockStoreMockRecorder) DeleteList(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteList", reflect.TypeOf((*MockStore)(nil).DeleteList), arg0, arg1)
+}
+
+// DeleteTask mocks base method.
+func (m *MockStore) DeleteTask(arg0 context.Context, arg1 uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTask", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTask indicates an expected call of DeleteTask.
+func (mr *MockStoreMockRecorder) DeleteTask(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTask", reflect.TypeOf((*MockStore)(nil).DeleteTask), arg0, arg1)
+}
+
 // DeleteUser mocks base method.
 func (m *MockStore) DeleteUser(arg0 context.Context, arg1 uuid.UUID) error {
 	m.ctrl.T.Helper()
@@ -63,6 +121,66 @@ func (m *MockStore) DeleteUser(arg0 context.Context, arg1 uuid.UUID) error {
 func (mr *MockStoreMockRecorder) DeleteUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockStore)(nil).DeleteUser), arg0, arg1)
+}
+
+// GetList mocks base method.
+func (m *MockStore) GetList(arg0 context.Context, arg1 uuid.UUID) (db.List, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetList", arg0, arg1)
+	ret0, _ := ret[0].(db.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetList indicates an expected call of GetList.
+func (mr *MockStoreMockRecorder) GetList(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockStore)(nil).GetList), arg0, arg1)
+}
+
+// GetListsByUserId mocks base method.
+func (m *MockStore) GetListsByUserId(arg0 context.Context, arg1 uuid.UUID) ([]db.List, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetListsByUserId", arg0, arg1)
+	ret0, _ := ret[0].([]db.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetListsByUserId indicates an expected call of GetListsByUserId.
+func (mr *MockStoreMockRecorder) GetListsByUserId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListsByUserId", reflect.TypeOf((*MockStore)(nil).GetListsByUserId), arg0, arg1)
+}
+
+// GetTask mocks base method.
+func (m *MockStore) GetTask(arg0 context.Context, arg1 uuid.UUID) (db.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTask", arg0, arg1)
+	ret0, _ := ret[0].(db.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTask indicates an expected call of GetTask.
+func (mr *MockStoreMockRecorder) GetTask(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTask", reflect.TypeOf((*MockStore)(nil).GetTask), arg0, arg1)
+}
+
+// GetTasksByListId mocks base method.
+func (m *MockStore) GetTasksByListId(arg0 context.Context, arg1 uuid.UUID) ([]db.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTasksByListId", arg0, arg1)
+	ret0, _ := ret[0].([]db.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTasksByListId indicates an expected call of GetTasksByListId.
+func (mr *MockStoreMockRecorder) GetTasksByListId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTasksByListId", reflect.TypeOf((*MockStore)(nil).GetTasksByListId), arg0, arg1)
 }
 
 // GetUserByEmail mocks base method.
@@ -108,6 +226,36 @@ func (m *MockStore) GetUsers(arg0 context.Context, arg1 db.GetUsersParams) ([]db
 func (mr *MockStoreMockRecorder) GetUsers(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockStore)(nil).GetUsers), arg0, arg1)
+}
+
+// UpdateList mocks base method.
+func (m *MockStore) UpdateList(arg0 context.Context, arg1 db.UpdateListParams) (db.List, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateList", arg0, arg1)
+	ret0, _ := ret[0].(db.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateList indicates an expected call of UpdateList.
+func (mr *MockStoreMockRecorder) UpdateList(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateList", reflect.TypeOf((*MockStore)(nil).UpdateList), arg0, arg1)
+}
+
+// UpdateTask mocks base method.
+func (m *MockStore) UpdateTask(arg0 context.Context, arg1 db.UpdateTaskParams) (db.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTask", arg0, arg1)
+	ret0, _ := ret[0].(db.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTask indicates an expected call of UpdateTask.
+func (mr *MockStoreMockRecorder) UpdateTask(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockStore)(nil).UpdateTask), arg0, arg1)
 }
 
 // UpdateUser mocks base method.
