@@ -10,7 +10,7 @@ CREATE TABLE "users" (
 CREATE TABLE "lists" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar NOT NULL,
-  "user_id" uuid,
+  "user_id" uuid NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -18,7 +18,7 @@ CREATE TABLE "tasks" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar NOT NULL,
   "description" varchar,
-  "list_id" uuid,
+  "list_id" uuid NOT NULL,
   "completed" boolean NOT NULL DEFAULT false,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );

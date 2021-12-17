@@ -19,8 +19,8 @@ INSERT INTO lists (
 `
 
 type CreateListParams struct {
-	Name   string        `json:"name"`
-	UserID uuid.NullUUID `json:"user_id"`
+	Name   string    `json:"name"`
+	UserID uuid.UUID `json:"user_id"`
 }
 
 func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (List, error) {

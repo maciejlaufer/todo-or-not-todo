@@ -10,17 +10,17 @@ import (
 )
 
 type List struct {
-	ID        uuid.UUID     `json:"id"`
-	Name      string        `json:"name"`
-	UserID    uuid.NullUUID `json:"user_id"`
-	CreatedAt time.Time     `json:"created_at"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	UserID    uuid.UUID `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Task struct {
 	ID          uuid.UUID      `json:"id"`
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"description"`
-	ListID      uuid.NullUUID  `json:"list_id"`
+	ListID      uuid.UUID      `json:"list_id"`
 	Completed   bool           `json:"completed"`
 	CreatedAt   time.Time      `json:"created_at"`
 }

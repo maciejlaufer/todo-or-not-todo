@@ -23,7 +23,7 @@ INSERT INTO tasks (
 type CreateTaskParams struct {
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"description"`
-	ListID      uuid.NullUUID  `json:"list_id"`
+	ListID      uuid.UUID      `json:"list_id"`
 }
 
 func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
@@ -74,7 +74,7 @@ WHERE list_id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) GetTasksByListId(ctx context.Context, listID uuid.NullUUID) ([]Task, error) {
+func (q *Queries) GetTasksByListId(ctx context.Context, listID uuid.UUID) ([]Task, error) {
 	rows, err := q.query(ctx, q.getTasksByListIdStmt, getTasksByListId, listID)
 	if err != nil {
 		return nil, err

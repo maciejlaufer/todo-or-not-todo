@@ -18,7 +18,7 @@ type Querier interface {
 	GetList(ctx context.Context, id uuid.UUID) (List, error)
 	GetLists(ctx context.Context) ([]List, error)
 	GetTask(ctx context.Context, id uuid.UUID) (Task, error)
-	GetTasksByListId(ctx context.Context, listID uuid.NullUUID) ([]Task, error)
+	GetTasksByListId(ctx context.Context, listID uuid.UUID) ([]Task, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, arg GetUsersParams) ([]User, error)
