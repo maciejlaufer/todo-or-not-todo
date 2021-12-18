@@ -22,6 +22,12 @@ ORDER BY email
 LIMIT $1
 OFFSET $2;
 
+-- name: GetUsersInList :many
+SELECT u.* FROM users u
+INNER JOIN users_lists ul ON ul.user_id = u.id
+WHERE ul.list_id = $1
+ORDER BY u.email;
+
 -- name: UpdateUser :one
 UPDATE users
 SET first_name = $2, last_name = $3

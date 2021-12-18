@@ -136,6 +136,43 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]User, err
 	return items, nil
 }
 
+const getUsersInList = `-- name: GetUsersInList :many
+SELECT u.id, u.email, u.password, u.first_name, u.last_name, u.created_at FROM users u
+INNER JOIN users_lists ul ON ul.user_id = u.id
+WHERE ul.list_id = $1
+ORDER BY u.email
+`
+
+func (q *Queries) GetUsersInList(ctx context.Context, listID uuid.UUID) ([]User, error) {
+	rows, err := q.query(ctx, q.getUsersInListStmt, getUsersInList, listID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Password,
+			&i.FirstName,
+			&i.LastName,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET first_name = $2, last_name = $3

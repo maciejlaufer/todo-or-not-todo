@@ -85,3 +85,22 @@ func TestGetLists(t *testing.T) {
 		require.NotEmpty(t, list)
 	}
 }
+
+func TestGetListsForUser(t *testing.T) {
+	list := createRandomList(t)
+	user := createRandomUser(t)
+
+	arg := AddUserToListParams{
+		UserID: user.ID,
+		ListID: list.ID,
+	}
+
+	_, err := testQueries.AddUserToList(context.Background(), arg)
+	require.NoError(t, err)
+
+	lists, err := testQueries.GetListsForUser(context.Background(), user.ID)
+	require.NoError(t, err)
+
+	require.NotEmpty(t, lists)
+	require.Contains(t, lists, list)
+}

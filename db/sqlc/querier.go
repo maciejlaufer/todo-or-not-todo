@@ -9,19 +9,23 @@ import (
 )
 
 type Querier interface {
+	AddUserToList(ctx context.Context, arg AddUserToListParams) (UsersList, error)
 	CreateList(ctx context.Context, arg CreateListParams) (List, error)
 	CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteList(ctx context.Context, id uuid.UUID) error
 	DeleteTask(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
+	DeleteUserFromList(ctx context.Context, arg DeleteUserFromListParams) error
 	GetList(ctx context.Context, id uuid.UUID) (List, error)
 	GetListsByCreatorId(ctx context.Context, creatorID uuid.UUID) ([]List, error)
+	GetListsForUser(ctx context.Context, userID uuid.UUID) ([]List, error)
 	GetTask(ctx context.Context, id uuid.UUID) (Task, error)
 	GetTasksByListId(ctx context.Context, listID uuid.UUID) ([]Task, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, arg GetUsersParams) ([]User, error)
+	GetUsersInList(ctx context.Context, listID uuid.UUID) ([]User, error)
 	UpdateList(ctx context.Context, arg UpdateListParams) (List, error)
 	UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)

@@ -15,6 +15,12 @@ SELECT * FROM lists
 WHERE creator_id = $1
 ORDER BY created_at;
 
+-- name: GetListsForUser :many
+SELECT l.* FROM lists l
+INNER JOIN users_lists ul ON ul.list_id = l.id
+WHERE ul.user_id = $1
+ORDER BY l.created_at;
+
 -- name: UpdateList :one
 UPDATE lists
 SET name = $2

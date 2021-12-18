@@ -22,6 +22,9 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.addUserToListStmt, err = db.PrepareContext(ctx, addUserToList); err != nil {
+		return nil, fmt.Errorf("error preparing query AddUserToList: %w", err)
+	}
 	if q.createListStmt, err = db.PrepareContext(ctx, createList); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateList: %w", err)
 	}
@@ -40,11 +43,17 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
 	}
+	if q.deleteUserFromListStmt, err = db.PrepareContext(ctx, deleteUserFromList); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteUserFromList: %w", err)
+	}
 	if q.getListStmt, err = db.PrepareContext(ctx, getList); err != nil {
 		return nil, fmt.Errorf("error preparing query GetList: %w", err)
 	}
 	if q.getListsByCreatorIdStmt, err = db.PrepareContext(ctx, getListsByCreatorId); err != nil {
 		return nil, fmt.Errorf("error preparing query GetListsByCreatorId: %w", err)
+	}
+	if q.getListsForUserStmt, err = db.PrepareContext(ctx, getListsForUser); err != nil {
+		return nil, fmt.Errorf("error preparing query GetListsForUser: %w", err)
 	}
 	if q.getTaskStmt, err = db.PrepareContext(ctx, getTask); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTask: %w", err)
@@ -61,6 +70,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUsersStmt, err = db.PrepareContext(ctx, getUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUsers: %w", err)
 	}
+	if q.getUsersInListStmt, err = db.PrepareContext(ctx, getUsersInList); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUsersInList: %w", err)
+	}
 	if q.updateListStmt, err = db.PrepareContext(ctx, updateList); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateList: %w", err)
 	}
@@ -75,6 +87,11 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.addUserToListStmt != nil {
+		if cerr := q.addUserToListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing addUserToListStmt: %w", cerr)
+		}
+	}
 	if q.createListStmt != nil {
 		if cerr := q.createListStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createListStmt: %w", cerr)
@@ -105,6 +122,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
 		}
 	}
+	if q.deleteUserFromListStmt != nil {
+		if cerr := q.deleteUserFromListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteUserFromListStmt: %w", cerr)
+		}
+	}
 	if q.getListStmt != nil {
 		if cerr := q.getListStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getListStmt: %w", cerr)
@@ -113,6 +135,11 @@ func (q *Queries) Close() error {
 	if q.getListsByCreatorIdStmt != nil {
 		if cerr := q.getListsByCreatorIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getListsByCreatorIdStmt: %w", cerr)
+		}
+	}
+	if q.getListsForUserStmt != nil {
+		if cerr := q.getListsForUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getListsForUserStmt: %w", cerr)
 		}
 	}
 	if q.getTaskStmt != nil {
@@ -138,6 +165,11 @@ func (q *Queries) Close() error {
 	if q.getUsersStmt != nil {
 		if cerr := q.getUsersStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUsersStmt: %w", cerr)
+		}
+	}
+	if q.getUsersInListStmt != nil {
+		if cerr := q.getUsersInListStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUsersInListStmt: %w", cerr)
 		}
 	}
 	if q.updateListStmt != nil {
@@ -194,19 +226,23 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                      DBTX
 	tx                      *sql.Tx
+	addUserToListStmt       *sql.Stmt
 	createListStmt          *sql.Stmt
 	createTaskStmt          *sql.Stmt
 	createUserStmt          *sql.Stmt
 	deleteListStmt          *sql.Stmt
 	deleteTaskStmt          *sql.Stmt
 	deleteUserStmt          *sql.Stmt
+	deleteUserFromListStmt  *sql.Stmt
 	getListStmt             *sql.Stmt
 	getListsByCreatorIdStmt *sql.Stmt
+	getListsForUserStmt     *sql.Stmt
 	getTaskStmt             *sql.Stmt
 	getTasksByListIdStmt    *sql.Stmt
 	getUserByEmailStmt      *sql.Stmt
 	getUserByIdStmt         *sql.Stmt
 	getUsersStmt            *sql.Stmt
+	getUsersInListStmt      *sql.Stmt
 	updateListStmt          *sql.Stmt
 	updateTaskStmt          *sql.Stmt
 	updateUserStmt          *sql.Stmt
@@ -216,19 +252,23 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                      tx,
 		tx:                      tx,
+		addUserToListStmt:       q.addUserToListStmt,
 		createListStmt:          q.createListStmt,
 		createTaskStmt:          q.createTaskStmt,
 		createUserStmt:          q.createUserStmt,
 		deleteListStmt:          q.deleteListStmt,
 		deleteTaskStmt:          q.deleteTaskStmt,
 		deleteUserStmt:          q.deleteUserStmt,
+		deleteUserFromListStmt:  q.deleteUserFromListStmt,
 		getListStmt:             q.getListStmt,
 		getListsByCreatorIdStmt: q.getListsByCreatorIdStmt,
+		getListsForUserStmt:     q.getListsForUserStmt,
 		getTaskStmt:             q.getTaskStmt,
 		getTasksByListIdStmt:    q.getTasksByListIdStmt,
 		getUserByEmailStmt:      q.getUserByEmailStmt,
 		getUserByIdStmt:         q.getUserByIdStmt,
 		getUsersStmt:            q.getUsersStmt,
+		getUsersInListStmt:      q.getUsersInListStmt,
 		updateListStmt:          q.updateListStmt,
 		updateTaskStmt:          q.updateTaskStmt,
 		updateUserStmt:          q.updateUserStmt,

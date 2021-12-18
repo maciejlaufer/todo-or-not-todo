@@ -95,6 +95,41 @@ func (q *Queries) GetListsByCreatorId(ctx context.Context, creatorID uuid.UUID) 
 	return items, nil
 }
 
+const getListsForUser = `-- name: GetListsForUser :many
+SELECT l.id, l.name, l.creator_id, l.created_at FROM lists l
+INNER JOIN users_lists ul ON ul.list_id = l.id
+WHERE ul.user_id = $1
+ORDER BY l.created_at
+`
+
+func (q *Queries) GetListsForUser(ctx context.Context, userID uuid.UUID) ([]List, error) {
+	rows, err := q.query(ctx, q.getListsForUserStmt, getListsForUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []List{}
+	for rows.Next() {
+		var i List
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatorID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateList = `-- name: UpdateList :one
 UPDATE lists
 SET name = $2
