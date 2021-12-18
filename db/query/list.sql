@@ -1,7 +1,7 @@
 -- name: CreateList :one
 INSERT INTO lists (
 	name,
-	user_id
+	creator_id
 ) VALUES (
 	$1, $2
 ) RETURNING *;
@@ -10,9 +10,9 @@ INSERT INTO lists (
 SELECT * FROM lists
 WHERE id = $1 LIMIT 1;
 
--- name: GetListsByUserId :many
+-- name: GetListsByCreatorId :many
 SELECT * FROM lists
-WHERE user_id = $1
+WHERE creator_id = $1
 ORDER BY created_at;
 
 -- name: UpdateList :one

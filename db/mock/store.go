@@ -138,19 +138,19 @@ func (mr *MockStoreMockRecorder) GetList(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetList", reflect.TypeOf((*MockStore)(nil).GetList), arg0, arg1)
 }
 
-// GetListsByUserId mocks base method.
-func (m *MockStore) GetListsByUserId(arg0 context.Context, arg1 uuid.UUID) ([]db.List, error) {
+// GetListsByCreatorId mocks base method.
+func (m *MockStore) GetListsByCreatorId(arg0 context.Context, arg1 uuid.UUID) ([]db.List, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetListsByUserId", arg0, arg1)
+	ret := m.ctrl.Call(m, "GetListsByCreatorId", arg0, arg1)
 	ret0, _ := ret[0].([]db.List)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetListsByUserId indicates an expected call of GetListsByUserId.
-func (mr *MockStoreMockRecorder) GetListsByUserId(arg0, arg1 interface{}) *gomock.Call {
+// GetListsByCreatorId indicates an expected call of GetListsByCreatorId.
+func (mr *MockStoreMockRecorder) GetListsByCreatorId(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListsByUserId", reflect.TypeOf((*MockStore)(nil).GetListsByUserId), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListsByCreatorId", reflect.TypeOf((*MockStore)(nil).GetListsByCreatorId), arg0, arg1)
 }
 
 // GetTask mocks base method.

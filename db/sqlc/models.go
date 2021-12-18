@@ -12,7 +12,7 @@ import (
 type List struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
-	UserID    uuid.UUID `json:"user_id"`
+	CreatorID uuid.UUID `json:"creator_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -32,4 +32,10 @@ type User struct {
 	FirstName sql.NullString `json:"first_name"`
 	LastName  sql.NullString `json:"last_name"`
 	CreatedAt time.Time      `json:"created_at"`
+}
+
+type UsersList struct {
+	UserID    uuid.UUID `json:"user_id"`
+	ListID    uuid.UUID `json:"list_id"`
+	CreatedAt time.Time `json:"created_at"`
 }

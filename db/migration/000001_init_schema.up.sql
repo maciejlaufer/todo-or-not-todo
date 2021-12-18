@@ -10,8 +10,15 @@ CREATE TABLE "users" (
 CREATE TABLE "lists" (
   "id" uuid PRIMARY KEY NOT NULL DEFAULT (gen_random_uuid()),
   "name" varchar NOT NULL,
-  "user_id" uuid NOT NULL,
+  "creator_id" uuid NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "users_lists" (
+  "user_id" uuid NOT NULL,
+  "list_id" uuid NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+  PRIMARY KEY ("user_id", "list_id")
 );
 
 CREATE TABLE "tasks" (
@@ -23,7 +30,11 @@ CREATE TABLE "tasks" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE "lists" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "lists" ADD FOREIGN KEY ("creator_id") REFERENCES "users" ("id");
+
+ALTER TABLE "users_lists" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "users_lists" ADD FOREIGN KEY ("list_id") REFERENCES "lists" ("id");
 
 ALTER TABLE "tasks" ADD FOREIGN KEY ("list_id") REFERENCES "lists" ("id");
 
@@ -37,7 +48,11 @@ CREATE INDEX ON "users" ("first_name", "last_name");
 
 CREATE INDEX ON "lists" ("name");
 
-CREATE INDEX ON "lists" ("user_id");
+CREATE INDEX ON "lists" ("creator_id");
+
+CREATE INDEX ON "users_lists" ("user_id", "list_id");
+
+CREATE INDEX ON "users_lists" ("list_id", "user_id");
 
 CREATE INDEX ON "tasks" ("name");
 

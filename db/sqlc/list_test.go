@@ -14,8 +14,8 @@ func createRandomList(t *testing.T) List {
 	user := createRandomUser(t)
 
 	arg := CreateListParams{
-		Name:   util.RandomString(10),
-		UserID: user.ID,
+		Name:      util.RandomString(10),
+		CreatorID: user.ID,
 	}
 
 	list, err := testQueries.CreateList(context.Background(), arg)
@@ -23,7 +23,7 @@ func createRandomList(t *testing.T) List {
 	require.NotEmpty(t, list)
 
 	require.Equal(t, arg.Name, list.Name)
-	require.Equal(t, arg.UserID, list.UserID)
+	require.Equal(t, arg.CreatorID, list.CreatorID)
 
 	require.NotZero(t, list.ID)
 	require.NotZero(t, list.CreatedAt)
@@ -77,7 +77,7 @@ func TestUpdateList(t *testing.T) {
 func TestGetLists(t *testing.T) {
 	list := createRandomList(t)
 
-	lists, err := testQueries.GetListsByUserId(context.Background(), list.UserID)
+	lists, err := testQueries.GetListsByCreatorId(context.Background(), list.CreatorID)
 	require.NoError(t, err)
 	require.Len(t, lists, 1)
 

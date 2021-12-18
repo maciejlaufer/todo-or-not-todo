@@ -12,24 +12,24 @@ import (
 const createList = `-- name: CreateList :one
 INSERT INTO lists (
 	name,
-	user_id
+	creator_id
 ) VALUES (
 	$1, $2
-) RETURNING id, name, user_id, created_at
+) RETURNING id, name, creator_id, created_at
 `
 
 type CreateListParams struct {
-	Name   string    `json:"name"`
-	UserID uuid.UUID `json:"user_id"`
+	Name      string    `json:"name"`
+	CreatorID uuid.UUID `json:"creator_id"`
 }
 
 func (q *Queries) CreateList(ctx context.Context, arg CreateListParams) (List, error) {
-	row := q.queryRow(ctx, q.createListStmt, createList, arg.Name, arg.UserID)
+	row := q.queryRow(ctx, q.createListStmt, createList, arg.Name, arg.CreatorID)
 	var i List
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.UserID,
+		&i.CreatorID,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -45,7 +45,7 @@ func (q *Queries) DeleteList(ctx context.Context, id uuid.UUID) error {
 }
 
 const getList = `-- name: GetList :one
-SELECT id, name, user_id, created_at FROM lists
+SELECT id, name, creator_id, created_at FROM lists
 WHERE id = $1 LIMIT 1
 `
 
@@ -55,20 +55,20 @@ func (q *Queries) GetList(ctx context.Context, id uuid.UUID) (List, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.UserID,
+		&i.CreatorID,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
-const getListsByUserId = `-- name: GetListsByUserId :many
-SELECT id, name, user_id, created_at FROM lists
-WHERE user_id = $1
+const getListsByCreatorId = `-- name: GetListsByCreatorId :many
+SELECT id, name, creator_id, created_at FROM lists
+WHERE creator_id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) GetListsByUserId(ctx context.Context, userID uuid.UUID) ([]List, error) {
-	rows, err := q.query(ctx, q.getListsByUserIdStmt, getListsByUserId, userID)
+func (q *Queries) GetListsByCreatorId(ctx context.Context, creatorID uuid.UUID) ([]List, error) {
+	rows, err := q.query(ctx, q.getListsByCreatorIdStmt, getListsByCreatorId, creatorID)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (q *Queries) GetListsByUserId(ctx context.Context, userID uuid.UUID) ([]Lis
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.UserID,
+			&i.CreatorID,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -99,7 +99,7 @@ const updateList = `-- name: UpdateList :one
 UPDATE lists
 SET name = $2
 WHERE id = $1
-RETURNING id, name, user_id, created_at
+RETURNING id, name, creator_id, created_at
 `
 
 type UpdateListParams struct {
@@ -113,7 +113,7 @@ func (q *Queries) UpdateList(ctx context.Context, arg UpdateListParams) (List, e
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.UserID,
+		&i.CreatorID,
 		&i.CreatedAt,
 	)
 	return i, err
