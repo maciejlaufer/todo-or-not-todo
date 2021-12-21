@@ -15,10 +15,11 @@ INSERT INTO users (
 	email,
 	password,
 	first_name,
-	last_name
+	last_name,
+	role
 ) VALUES (
-	$1, $2, $3, $4
-) RETURNING id, email, password, first_name, last_name, created_at
+	$1, $2, $3, $4, $5
+) RETURNING id, email, password, first_name, last_name, created_at, role
 `
 
 type CreateUserParams struct {
@@ -26,6 +27,7 @@ type CreateUserParams struct {
 	Password  string         `json:"password"`
 	FirstName sql.NullString `json:"first_name"`
 	LastName  sql.NullString `json:"last_name"`
+	Role      string         `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -34,6 +36,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Password,
 		arg.FirstName,
 		arg.LastName,
+		arg.Role,
 	)
 	var i User
 	err := row.Scan(
@@ -43,6 +46,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
@@ -57,7 +61,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password, first_name, last_name, created_at FROM users
+SELECT id, email, password, first_name, last_name, created_at, role FROM users
 WHERE email = $1 LIMIT 1
 `
 
@@ -71,12 +75,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.FirstName,
 		&i.LastName,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, email, password, first_name, last_name, created_at FROM users
+SELECT id, email, password, first_name, last_name, created_at, role FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -90,12 +95,13 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.FirstName,
 		&i.LastName,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, email, password, first_name, last_name, created_at FROM users
+SELECT id, email, password, first_name, last_name, created_at, role FROM users
 ORDER BY email
 LIMIT $1
 OFFSET $2
@@ -122,6 +128,7 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]User, err
 			&i.FirstName,
 			&i.LastName,
 			&i.CreatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}
@@ -137,7 +144,7 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]User, err
 }
 
 const getUsersInList = `-- name: GetUsersInList :many
-SELECT u.id, u.email, u.password, u.first_name, u.last_name, u.created_at FROM users u
+SELECT u.id, u.email, u.password, u.first_name, u.last_name, u.created_at, u.role FROM users u
 INNER JOIN users_lists ul ON ul.user_id = u.id
 WHERE ul.list_id = $1
 ORDER BY u.email
@@ -159,6 +166,7 @@ func (q *Queries) GetUsersInList(ctx context.Context, listID uuid.UUID) ([]User,
 			&i.FirstName,
 			&i.LastName,
 			&i.CreatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}
@@ -175,19 +183,25 @@ func (q *Queries) GetUsersInList(ctx context.Context, listID uuid.UUID) ([]User,
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET first_name = $2, last_name = $3
+SET first_name = $2, last_name = $3, role = $4
 WHERE id = $1
-RETURNING id, email, password, first_name, last_name, created_at
+RETURNING id, email, password, first_name, last_name, created_at, role
 `
 
 type UpdateUserParams struct {
 	ID        uuid.UUID      `json:"id"`
 	FirstName sql.NullString `json:"first_name"`
 	LastName  sql.NullString `json:"last_name"`
+	Role      string         `json:"role"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.queryRow(ctx, q.updateUserStmt, updateUser, arg.ID, arg.FirstName, arg.LastName)
+	row := q.queryRow(ctx, q.updateUserStmt, updateUser,
+		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Role,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -196,6 +210,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.CreatedAt,
+		&i.Role,
 	)
 	return i, err
 }

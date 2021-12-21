@@ -32,6 +32,7 @@ type User struct {
 	FirstName sql.NullString `json:"first_name"`
 	LastName  sql.NullString `json:"last_name"`
 	CreatedAt time.Time      `json:"created_at"`
+	Role      string         `json:"role"`
 }
 
 type UsersList struct {

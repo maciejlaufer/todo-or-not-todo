@@ -3,9 +3,10 @@ INSERT INTO users (
 	email,
 	password,
 	first_name,
-	last_name
+	last_name,
+	role
 ) VALUES (
-	$1, $2, $3, $4
+	$1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetUserById :one
@@ -30,7 +31,7 @@ ORDER BY u.email;
 
 -- name: UpdateUser :one
 UPDATE users
-SET first_name = $2, last_name = $3
+SET first_name = $2, last_name = $3, role = $4
 WHERE id = $1
 RETURNING *;
 

@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	db "github.com/maciejlaufer/todoornottodo/db/sqlc"
+	"github.com/maciejlaufer/todoornottodo/util"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -21,6 +22,7 @@ type userResponse struct {
 	Email     string      `json:"email" binding:"required"`
 	FirstName null.String `json:"first_name"`
 	LastName  null.String `json:"last_name"`
+	Role      string      `json:"role"`
 }
 
 func formatUserResponse(user db.User) userResponse {
@@ -36,6 +38,7 @@ func formatUserResponse(user db.User) userResponse {
 		Email:     user.Email,
 		FirstName: firstName,
 		LastName:  lastName,
+		Role:      user.Role,
 	}
 }
 
@@ -51,6 +54,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		Password:  req.Password,
 		FirstName: db.NewNullString(req.FirstName),
 		LastName:  db.NewNullString(req.LastName),
+		Role:      util.UserRole,
 	}
 
 	user, err := server.store.CreateUser(ctx, arg)
