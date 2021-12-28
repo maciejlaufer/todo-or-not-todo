@@ -2,10 +2,12 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	db "github.com/maciejlaufer/todoornottodo/db/sqlc"
 	"github.com/maciejlaufer/todoornottodo/util"
 	"gopkg.in/guregu/null.v4"
@@ -59,6 +61,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			fmt.Println(pqErr.Code.Name())
+			switch pqErr.Code.Name() {
+			case "unique_violation":
+				ctx.JSON(http.StatusBadRequest, errorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
