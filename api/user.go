@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,14 +13,14 @@ import (
 )
 
 type createUserRequest struct {
-	Email     string `json:"email" binding:"required"`
-	Password  string `json:"password" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+	Password  string `json:"password" binding:"required,min=8"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 }
 
 type userResponse struct {
-	Email     string      `json:"email" binding:"required"`
+	Email     string      `json:"email"`
 	FirstName null.String `json:"first_name"`
 	LastName  null.String `json:"last_name"`
 	Role      string      `json:"role"`
@@ -51,9 +50,15 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
 	arg := db.CreateUserParams{
 		Email:     req.Email,
-		Password:  req.Password,
+		Password:  hashedPassword,
 		FirstName: db.NewNullString(req.FirstName),
 		LastName:  db.NewNullString(req.LastName),
 		Role:      util.UserRole,
@@ -62,7 +67,6 @@ func (server *Server) createUser(ctx *gin.Context) {
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
-			fmt.Println(pqErr.Code.Name())
 			switch pqErr.Code.Name() {
 			case "unique_violation":
 				ctx.JSON(http.StatusBadRequest, errorResponse(err))
