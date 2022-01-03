@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -261,6 +262,8 @@ func TestGetUserAPI(t *testing.T) {
 			url := fmt.Sprintf("/users/%s", tc.userID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			addAuthorization(t, request, server.tokenMaker, authorizationTypeBearer, "test@test.com", time.Minute)
 
 			server.router.ServeHTTP(recorder, request)
 
